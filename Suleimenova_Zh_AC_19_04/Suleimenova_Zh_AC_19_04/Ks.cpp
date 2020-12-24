@@ -1,17 +1,22 @@
 #include "Ks.h"
 #include "Utils.h"
+#include <limits>
 using namespace std;
 
 int Ks::MaxId = 0;
 Ks::Ks()
 {
 	id = ++MaxId;
-	name = "Имя не введена";
+	name = "Нет названия";
 	ceh = 0;
 	cehwork = 0;
 	effective = 0.0;
 }
-
+void Ks::EditKs(int LaunchCeh)
+{
+	if (LaunchCeh && cehwork < ceh) cehwork++;
+	if (!LaunchCeh && cehwork) cehwork--;
+}
 int Ks::GetId() const
 {
 	return id;
@@ -19,7 +24,7 @@ int Ks::GetId() const
 ostream& operator<<(ostream& out, const Ks& k)
 {
 	cout << "\nID: " << k.id
-		<< "\tИмя: " << k.name
+		<< "\tНазвание: " << k.name
 		<< "\tКоличество цехов: " << k.ceh
 		<< "\tКоличество цехов в работе: " << k.cehwork
 		<< "\tЭффективность: " << k.effective;
@@ -28,12 +33,12 @@ ostream& operator<<(ostream& out, const Ks& k)
 
 istream& operator>>(istream& in, Ks& k)
 {
-	cout << "ВВедите имя:";
+	cout << "Введите название:";
 	cin.ignore(1, '\n');
 	getline(cin, k.name);
-	k.ceh = GetCorrectNumber(0, INT_MAX, "Введите число КЦ:");  
-	k.cehwork = GetCorrectNumber(0, INT_MAX, "Введите число КЦ в работе:");
-	k.effective = GetCorrectNumber(0.0, DBL_MAX, "Введите эффективность:");
+	k.ceh = GetCorrectNumber(0, INT_MAX, "ВВедите КЦ:");
+	k.cehwork = GetCorrectNumber(0, INT_MAX, "ВВедите КЦ в работе:");
+	k.effective = GetCorrectNumber(0.0, DBL_MAX, "ВВедите эффективность:");
 	return in;
 }
 

@@ -1,16 +1,26 @@
-#pragma once     //Proverka
+#pragma once
 #include <iostream>
 #include <string>
+using namespace std;
+
 template <typename T>
-T GetCorrectNumber(T min, T max, std::string Message)
+T GetCorrectNumber(T min, T max, string Message)
 {
 	T vvod;
-	std::cout << Message;
-	while ((std::cin >> vvod).fail() || (vvod < min) || (vvod > max))
+	cout << Message;
+	while ((cin >> vvod).fail() || (vvod < min) || (vvod > max))
 	{
-		std::cin.clear();
-		std::cin.ignore(10000, '\n');
-		std::cout << Message;
+		cin.clear();
+		cin.ignore(10000, '\n');
+		cout << Message;
 	}
 	return vvod;
+}
+inline string AskingForName()
+{
+	string filename;
+	cout << "\nPlease, enter the name: ";
+	cin.ignore(1, '\n');
+	getline(cin, filename);
+	return filename;
 }

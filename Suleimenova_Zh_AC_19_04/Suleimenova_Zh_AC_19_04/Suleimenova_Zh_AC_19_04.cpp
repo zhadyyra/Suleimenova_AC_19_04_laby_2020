@@ -1,6 +1,11 @@
 ﻿#include <iostream>
 #include <fstream>
 #include <string>
+#include <limits>
+#include <vector>
+#include <unordered_map>
+#include <map>
+#include <set> 
 #include "Pipeline.h"
 #include "Ks.h"
 #include "Utils.h"
@@ -14,23 +19,24 @@ void PrintMenu()
 		<< "3. Удалить информацию трубопроводов.\n"
 		<< "4. Удалить информацию КС.\n"
 		<< "5. Загрузить трубопроводы и КС из файла.\n"
-		<< "6. Показать информацию обо всех трубопроводах.\n"
+		<< "6. Показать информацию обо всех трубопроводах.\n" 
 		<< "7. Показать информацию обо всех КС.\n"
 		<< "8. Сохранить всю информацию в файл.\n"
 		<< "9. Пакетное редактирование трубопроводов.\n"
 		<< "10. Поиск трубопроводов по фильтру.\n"
 		<< "11. Поиск КС по фильтру.\n"
+		<< "12. Запустить или остановить цех КС.\n"
+		<< "13. Выберите части для сети передачи. \n"
+		<< "14. Создать / обновить сеть передачи. \n"
+		<< "15. Сохранить сеть передачи в файл. \n"
+		<< "16. Загрузить сеть передачи из файла. \n"
+		<< "17. Показать таблицу веса графа. \n"
+		<< "18. Топологическая сортировка графа. \n"
+		<< "19. Найти кратчайший путь.\n"
+		<< "20. Найти максимальный расход.\n"
 		<< "0. Выход.\n";
 }
 
-string AskingForName()    //Для сохранения файла по имени и для загрузки из файла
-{
-	string filename;
-	cout << "\nПожалуйства, введите имя: ";
-	cin.ignore(1, '\n');
-	getline(cin, filename);
-	return filename;
-}
 
 void LoadAll(unordered_map<int, Pipeline>& Pipeline_s, unordered_map <int, Ks>& Ks_s)
 {
@@ -175,7 +181,7 @@ int main()
 	for (; ; ) 
 	{
 		PrintMenu();
-		switch (GetCorrectNumber(0, 16, "Пожалуйста, выберите число от 0 до 11.\n"))
+		switch (GetCorrectNumber(0, 20, "Пожалуйста, выберите число от 0 до 20.\n"))
 		{
 		case 1:
 		{
@@ -295,7 +301,65 @@ int main()
 			else  cout << "Информация о КС пока не поступала.Введите данные, выбрав 2 или 5 точек.\n ";
 			break;
 		}
+		case 12:
+		{
+			if (Ks_s.size())
+			{
+				unordered_map<int, Ks>::iterator got = Ks_s.find(GetCorrectNumber(0, INT_MAX,
+					"\nПожалуйста, выберите правильный ID КС, который вы хотите отредактировать : "));
+				if (got == Ks_s.end())
+					cout << "Объект не найден.\n";
+				else
+				{
+					got->second.EditKs(GetCorrectNumber(0, 1, "Пожалуйста, введите 1 для запуска или 0 для остановки : "));
+					cout << "Выполнено.\n";
+				}
+			}
+			else cout << "Ks информации пока не поступало.Введите данные, выбрав 2 или 5 точек.\n ";
+			break;
+		}
+		case 13:
+		{
+			n.CreateConnection(Pipeline_s, Ks_s);
+			break;
+		}
 
+		case 14:
+		{
+			n.CreateNetwork(Pipeline_s);
+			break;
+		}
+		case 15:
+		{
+			n.SaveNetwork(Pipeline_s, Ks_s);
+			break;
+		}
+		case 16:
+		{
+			n.LoadNetwork(Pipeline_s, Ks_s);
+			n.CreateNetwork(Pipeline_s);
+			break;
+		}
+		case 17:
+		{
+			n.PrintNetwork();
+			break;
+		}
+		case 18:
+		{
+			n.TopolSort(Pipeline_s);
+			break;
+		}
+		case 19:
+		{
+			n.ShortDist();
+			break;
+		}
+		case 20:
+		{
+			n.MaxFlow();
+			break;
+		}
 		case 0:
 		{
 			return 0;
