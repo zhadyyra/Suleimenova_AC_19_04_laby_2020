@@ -138,36 +138,33 @@ void EditAllPipes(unordered_map <int, Pipeline>& Pipeline_s, Network& n) //Ре�
 
 void DelPipe(unordered_map<int, Pipeline>& Pipeline_s, Network& n)
 {
-	unordered_map<int, Pipeline>::iterator got = Pipeline_s.find(GetCorrectNumber(0, INT_MAX,
-		"\nПожалуйста, выберите правильный ID объекта, который вы хотите удалить : "));
-	if (got == Pipeline_s.end())
+
+	int IdDel = GetCorrectNumber(0, Pipeline::MaxId,
+		"\nПожалуйста, введите правильный ID объекта, который вы хотите удалить: ");
+	auto IdToDelete = Pipeline_s.find(IdDel);
+	if (IdToDelete == Pipeline_s.end())
 		cout << "Объект не найден.\n";
 	else
 	{
-		for (const auto& obj : n.GtsPipe)
-		{
-			if (obj == got->second.GetId())
-				n.NetworkExist = false;
-		}
-		Pipeline_s.erase(got->first);
-		cout << "Выполнено.\n";
+		n.PipeDelChanges(IdDel);
+		n.CreateNetwork(Pipeline_s);
+		Pipeline_s.erase(IdToDelete->first);
+		cout << "Done.\n";
 	}
 }
 
-void DelKs(unordered_map<int, Ks>& Ks_s, Network& n)
+void DelKs(unordered_map<int, Ks>& Ks_s, unordered_map <int, Pipeline>& Pipeline_s, Network& n)
 {
-	unordered_map<int, Ks>::iterator got = Ks_s.find(GetCorrectNumber(0, INT_MAX,
-		"\nПожалуйста, выберите правильный ID объекта, который вы хотите удалить : "));
-	if (got == Ks_s.end())
+	int IdDel = GetCorrectNumber(0, Ks::MaxId,
+		"\nПожалуйста, введите правильный ID объекта, который вы хотите удалить: ");
+	auto IdToDelete = Ks_s.find(IdDel);
+	if (IdToDelete == Ks_s.end())
 		cout << "Объект не найден.\n";
 	else
 	{
-		for (const auto& obj : n.GtsKs)
-		{
-			if (obj == got->second.GetId())
-				n.NetworkExist = false;
-		}
-		Ks_s.erase(got->first);
+		n.KsDelChanges(IdDel, Pipeline_s);
+		n.CreateNetwork(Pipeline_s);
+		Ks_s.erase(IdToDelete->first);
 		cout << "Выполнено.\n";
 	}
 }
@@ -210,7 +207,7 @@ int main()
 		{
 			if (Ks_s.size())
 			{
-				DelKs(Ks_s, n);
+				DelKs(Ks_s, Pipeline_s, n);
 			}
 			else cout << "Информация о КС пока не поступала.Введите данные, выбрав 1 или 5 точек.\n ";
 			break;

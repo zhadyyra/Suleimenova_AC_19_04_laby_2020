@@ -17,27 +17,27 @@ void Network::CreateConnection(unordered_map<int, Pipeline>& Pipeline_s, const u
 		auto IterObj1 = Ks_s.find(GetCorrectNumber(1, Ks::MaxId,
 			"\n1. Введите правильный ID КС, из которого выходит труба: "));
 		auto IterObj2 = Pipeline_s.find(GetCorrectNumber(1, Pipeline::MaxId,
-			"\n2. Введите правильный ID соединительной трубы на КС:"));
+			"\n2. Введите правильный ID соединительной трубы к КС: "));
 		auto IterObj3 = Ks_s.find(GetCorrectNumber(1, Ks::MaxId,
-			"\n3. Пожалуйста, введите правильный ID КС, в который входит труба: "));
+			"\n3. Введите правильный ID КС, в который входит труба: "));
 		if (IterObj1 == Ks_s.end())
 		{
-			cout << "КС, из которой выходит труба, не найден.\n";
+			cout << "КC, из которой выходит труба, не найден.\n";
 			return;
 		}
 		if ((IterObj2->second.repear == true) or (IterObj2 == Pipeline_s.end()))
 		{
-			cout << "Соединительная труба на КС не найдена или эта труба находится в ремонте.\n";
+			cout << "Соединительная труба не найдена или эта труба в ремонте.\n";
 			return;
 		}
 		if (IterObj2->second.InputId != 0)
 		{
-			cout << "Эта труба уже была связана с другими КС.\n";
+			cout << "Эта труба уже была связана с другим КС..\n";
 			return;
 		}
 		if ((IterObj1->second.GetId() == IterObj3->second.GetId()) or (IterObj3 == Ks_s.end()))
 		{
-			cout << "КС, в которых входит труба, не найден, или вы выбрали 2 одинаковых КС.\n";
+			cout << "КС, в которые входит труба, не найден, или вы выбрали 2 одинаковых КС\n";
 			return;
 		}
 		GtsKs.insert(IterObj1->second.GetId());
@@ -98,7 +98,7 @@ void Network::CreateNetwork(const unordered_map<int, Pipeline>& Pipeline_s)
 		throughputs.emplace(make_pair(line, column), obj.second.Throughput);
 	}
 	NetworkExist = true;
-	cout << "Сеть передачи обновлена.\n";
+	cout << "Transmission network updated.\n";
 }
 
 void Network::PrintTable(map<pair<int, int>, int>& table)
@@ -121,24 +121,17 @@ void Network::PrintNetwork()
 {
 	if (NetworkExist)
 	{
-		cout << "\n ";
-		for (const auto& column : mGtsKs)
-			cout << " " << column.second;
-		for (const auto& line : mGtsKs)
-		{
-			cout << endl << line.second;
-			for (const auto& column : mGtsKs)
-			{
-				cout << " " << network[make_pair(line.first, column.first)];
-			}
-		}
-		cout << "\n\n";
+		cout << "\nСмежная таблица длин труб:\n";
+		PrintTable(network);
+		cout << "\nСмежная таблица для пропускной способности труб:\n";
+		PrintTable(throughputs);
 	}
 	else cout << "Сеть еще не создана.\n";
 }
 
 void Network::KsDelChanges(int id, unordered_map <int, Pipeline>& Pipeline_s)
 {
+	//https://stackoverflow.com/questions/20627458/how-to-remove-elements-from-an-stdset-while-iterating-over-it/20627506#20627506
 	for (auto IterKs = GtsKs.begin(); IterKs != GtsKs.end();)
 	{
 		if (*IterKs == id)
@@ -216,13 +209,13 @@ void Network::LoadNetwork(unordered_map<int, Pipeline>& Pipeline_s, unordered_ma
 	if (fin.is_open())
 	{
 		char ch;
-			while (fin.get(ch))
-			{
-				cout << ch;
-			}
-		
+		while (fin.get(ch))
+		{
+			cout << ch;
+		}
 	}
-	else cout << "Файл с таким именем не существует.\n";
+	else cout << "Файл с этим именем не найден.\n";
+	fin.close();
 }
 
 void Network::DFS(int start, vector<int>& color, stack <int>& answer_stack)
@@ -290,13 +283,13 @@ void Network::TopolSort(const unordered_map<int, Pipeline>& Pipeline_s)
 			}
 			else
 			{
-				int numeric = 1;
+				int i = 1;
 				while (!answer_stack.empty())
 				{
 					auto iter = mGtsKs.find(answer_stack.top());
-					answer.insert(pair<int, int>(numeric, iter->second));
+					answer.insert(pair<int, int>(i, iter->second));
 					answer_stack.pop();
-					numeric++;
+					i++;
 				}
 				cout << "\nТопологическая сортировка:\n";
 				for (const auto& sort : answer)
@@ -332,10 +325,10 @@ void Network::ShortDist()
 	if (NetworkExist)
 	{
 		int start = FindVertex("\nПожалуйста, введите правильный ID вершины, от которой будет рассчитан путь : ");
-		int end = FindVertex("\nПожалуйста, введите правильный ID вершины для расчета пути: ");
+		int end = FindVertex("\nПожалуйста, введите правильный ID вершины для расчета пути(второй) : ");
 		if ((start == -1) || (end == -1))
 		{
-			cout << "ID вершины неверный.\n";
+			cout << "Номер вершины неверный.\n";
 			return;
 		}
 		else
@@ -400,7 +393,7 @@ void Network::ShortDist()
 				}
 				cout << endl;
 			}
-			else cout << start << " > " << end << " = " << "Нет пути(бесконечность)" << endl << endl;
+			else cout << start << " > " << end << " = " << "нет пути(бесконечность)" << endl << endl;
 		}
 	}
 	else cout << "Сеть еще не создана.\n";
@@ -457,10 +450,10 @@ void Network::MaxFlow()
 {
 	if (NetworkExist)
 	{
-		int source = FindVertex("\nПожалуйста, введите правильный ID вершины для расчета потока(источника) : ");
+		int source = FindVertex("\nПожалуйста, введите правильный ID вершины для расчета потока(источника): ");
 		int stock = FindVertex("\nПожалуйста, введите правильный ID вершины для расчета потока(сток): ");
 		if ((source == -1) || (stock == -1) || (stock == source))
-			cout << "ID вершины неверный.\n";
+			cout << "Номер вершины неверный.\n";
 		else
 		{
 			int maxflow = 0;
@@ -502,8 +495,8 @@ void Network::MaxFlow()
 				}
 				maxflow += lyambda;
 			}
-			cout << "\nМаксимальный поток между " << source << " и " << stock << " равен: " << maxflow << endl;
+			cout << "\nМаксимальный поток между " << source << " и" << stock << " равен: " << maxflow << endl;
 		}
 	}
-	else cout << "Сеть еще не создана.\n";
+	else cout << "Сеть еще не создана..\n";
 }
